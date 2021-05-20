@@ -1,0 +1,60 @@
+</html>
+<head>
+<style>
+  .tradingview-widget-container {
+    margin: 5px;
+  }
+  .tradingview-widget-copyright {
+    display: none
+  }
+</style>
+</head>
+<body>
+  <div style="margin: 5px; width: 100%;display: flex;">
+  <button type="button" onclick="loadAll()">Re-Load</button>
+  <input id="tickers" style="margin-left: 5px; width: 90%" value="BTCUSDT,ETHUSDT,XRPUSDT,DOGEUSDT,LTCUSDT,ADAUSDT,BCHUSDT,EOSUSDT,DOTUSDT,TRXUSDT,LINKUSDT,FILUSDT"></input>
+  </div>
+  <div id="items" style="display: flex; flex-wrap: wrap;"></div>
+  <script type="text/javascript">
+  (function() {
+    var coins = getCookie('coins');
+    if(coins != null) {
+      document.getElementById("tickers").value = coins;
+    }
+    loadAll();
+
+  })();
+  function getCookie(name) {
+      var nameEQ = name + "=";
+      var ca = document.cookie.split(';');
+      for(var i=0;i < ca.length;i++) {
+          var c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1,c.length);
+          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+      }
+      return null;
+  }
+  function loadAll() {
+    var coinsStr = document.getElementById("tickers").value;
+    var coins =coinsStr.split(',');
+    var container = document.getElementById('items');
+    container.innerHTML = '';
+    for (i = 0; i < coins.length; i++) {
+      container.innerHTML += '<div class="tradingview-widget-container"><div class="tradingview-widget-container__widget" id='+ coins[i] +'></div></dive>';
+      var src = 'https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js';
+      var args = '{"symbol": "BINANCE:'+ coins[i] +'", "width": "320", "height": "200", "locale": "in", "dateRange": "1D", "colorTheme": "dark", "trendLineColor": "#37a6ef", "underLineColor": "rgba(55, 166, 239, 0.15)", "isTransparent": false, "autosize": false, "largeChartUrl": ""}';
+      insertScript(src, args, coins[i]);
+    }
+    document.cookie = "coins=" + coinsStr + "; path=/";
+  }
+  function insertScript (src, innerText, coin) {
+    var widget = document.getElementById(coin);
+    var s = document.createElement('script')
+    s.type = 'text/javascript'
+    s.src = src;
+    s.textContent = innerText;
+    widget.appendChild(s);
+  }
+</script>
+</body>
+</html>
